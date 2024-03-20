@@ -1,4 +1,4 @@
-# crawl-ml-proceedings
+# Crawl ICLR, ICML and NeurIPS
 A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bibtex et cetera.
 
 # How to use
@@ -12,6 +12,7 @@ supported venues:
 - iclm, back to 2013,
 - neurips, back to 1988
 
+# Rank abstracts to own research using LLMs
 Do this for all venues if you want papers from all of them.
 
     python find_papers.py
