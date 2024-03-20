@@ -80,8 +80,22 @@ def get_neurips_paper_urls(search_term):
 
     return paper_urls
 
+def find_open_review_url_by_title(title):
+    # TODO: not working yet ...
+    url = 'https://openreview.net/search'
+    search_term = title.replace(' ', '+')
+    url += '?term=' + "\"{}\"".format(search_term) + '&group=all&content=all&source=all'
+
+    print(url)
+
+    page = requests.get(url)
+    print(page.text)
+    soup = BeautifulSoup(page.text, 'html.parser')
+
+    return None
+
 def get_iclr_paper_urls(search_term):
-    years = [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    years = [2022, 2023] # TODO: seems that this only works for last two years... have to search by title at openreview or something for the rest ...
     paper_urls = []
     for year in years:
         url = 'https://iclr.cc/virtual/{}/papers.html?filter=titles&search={}'.format(year, search_term.replace(' ', '+'))
@@ -94,18 +108,23 @@ def get_iclr_paper_urls(search_term):
         for li_item in li_items:
             #print(search_term, li_item.text.lower())
             if search_term in li_item.text.lower():
-                #print(year, li_item.text.lower())
+                # TODO: not working yet
+                # openreview_url = find_open_review_url_by_title(li_item.text.lower())
+                # paper_urls.append(openreview_url)
+
                 link = li_item.find('a')
                 if link is not None:
                     poster_url = link.get('href')
                     poster_page = requests.get('https://iclr.cc' + poster_url)
                     poster_soup = BeautifulSoup(poster_page.text, 'html.parser')
+                    
                     # Find the link with class 'btn btn btn-outline-dark btn-sm href_URL'
                     link = poster_soup.find('a', class_='btn btn btn-outline-dark btn-sm href_URL')
 
                     # Extract the URL
                     openreview_url = link.get('href') if link else None
                     paper_urls.append(openreview_url)
+                    print(year, openreview_url)
 
     return paper_urls
 
