@@ -7,7 +7,7 @@ A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bib
 
 This will crawl 'iclr' for papers with 'active learning' in the title and insert them into papers.db.
 
-supported venues: iclr, iclm, neurips
+__supported venues__: iclr (back to 2018), iclm (back to 2013), neurips (back to 1988)
 
 Do this for all venues if you want papers from all of them.
 
