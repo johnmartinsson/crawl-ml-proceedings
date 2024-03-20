@@ -5,6 +5,7 @@ import paper
 import requests
 from bs4 import BeautifulSoup
 import tqdm
+import json
 
 def get_papers(search_term, url_getter, url_parser):
     papers = []
@@ -80,7 +81,53 @@ def get_neurips_paper_urls(search_term):
     return paper_urls
 
 def get_iclr_paper_urls(search_term):
-    pass
+    years = [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    paper_urls = []
+    for year in years:
+        url = 'https://iclr.cc/virtual/{}/papers.html?filter=titles&search={}'.format(year, search_term.replace(' ', '+'))
+
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, 'html.parser')
+        li_items = soup.find_all('li')
+
+        # Extract the URLs
+        for li_item in li_items:
+            #print(search_term, li_item.text.lower())
+            if search_term in li_item.text.lower():
+                #print(year, li_item.text.lower())
+                link = li_item.find('a')
+                if link is not None:
+                    poster_url = link.get('href')
+                    poster_page = requests.get('https://iclr.cc' + poster_url)
+                    poster_soup = BeautifulSoup(poster_page.text, 'html.parser')
+                    # Find the link with class 'btn btn btn-outline-dark btn-sm href_URL'
+                    link = poster_soup.find('a', class_='btn btn btn-outline-dark btn-sm href_URL')
+
+                    # Extract the URL
+                    openreview_url = link.get('href') if link else None
+                    paper_urls.append(openreview_url)
+
+    return paper_urls
+
+def parse_openreview_paper_url(url):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, 'html.parser')
+
+    # Extract the JSON data from the script tag with id '__NEXT_DATA__'
+    script_tag = soup.find('script', id='__NEXT_DATA__')
+    data = json.loads(script_tag.string)
+
+    # Extract the required information
+    forum_note = data['props']['pageProps']['forumNote']
+    title = forum_note['content']['title']
+    authors = forum_note['content']['authors']
+    venue = forum_note['content']['venue']
+    year = forum_note['content']['_bibtex'].split('\n')[4].split('=')[1].strip('{},')  # Extract year from bibtex
+    bibtex = forum_note['content']['_bibtex']
+    url_pdf = 'https://openreview.net' + forum_note['content']['pdf']  # Prepend the base URL
+    abstract = forum_note['content']['abstract']
+    
+    return paper.Paper(title, authors, year, venue, bibtex, url_pdf, abstract)
 
 def get_tmlr_paper_urls(search_term):
     pass
