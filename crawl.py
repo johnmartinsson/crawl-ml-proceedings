@@ -2,6 +2,7 @@ import os
 import parse_site as ps
 import argparse
 import sqlite3
+from functools import partial
 
 def main():
     # parse the arguments
@@ -19,7 +20,12 @@ def main():
     elif args.venue == 'icml':
         papers = ps.get_papers(search_term, ps.get_icml_paper_urls, ps.parse_icml_paper_url)
     elif args.venue == 'iclr':
-        papers = ps.get_papers(search_term, ps.get_iclr_paper_urls, ps.parse_openreview_paper_url)
+        years = [2018, 2019, 2020, 2021, 2022, 2023]
+        papers = []
+        for year in years:
+            # ICLR is wierd, so we need to use partial functions and create a new function for each year
+            _papers = ps.get_papers(search_term, partial(ps.get_iclr_paper_ids, year=year), partial(ps.parse_openreview_paper_id, venue='iclr', year=year))
+            papers.extend(_papers)
     elif args.venue == 'tmlr':
         ps.parse_tmlr()
     elif args.venue == 'jmlr':
@@ -40,7 +46,8 @@ def main():
             bibtex TEXT,
             url_pdf TEXT,
             abstract TEXT,
-            search_term TEXT
+            search_term TEXT,
+            accepted BOOLEAN DEFAULT FALSE
         )
     """)
     # store papers in a database
@@ -50,8 +57,8 @@ def main():
             print(paper)
             c.execute("""
                 INSERT OR REPLACE INTO papers 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (paper.title, ", ".join(paper.authors), paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, search_term))
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (paper.title, ", ".join(paper.authors), paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, search_term, paper.accepted))
             conn.commit()
     conn.close()
 

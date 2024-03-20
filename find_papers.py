@@ -18,7 +18,7 @@ def main():
 
     papers = []
     for d in data:
-        papers.append(Paper(title=d[0], authors=d[1].split(', '), venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6]))
+        papers.append(Paper(title=d[0], authors=d[1].split(', '), venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
 
     # Close the connection
     conn.close()
@@ -45,15 +45,17 @@ def main():
 
     similarities = []
     for paper in tqdm.tqdm(papers):
-        abstract2 = paper.abstract
-        embedding2 = encode(abstract2).squeeze()
+        if paper.accepted:
+            abstract2 = paper.abstract
+            embedding2 = encode(abstract2).squeeze()
 
-        cosine_similarity = torch.nn.functional.cosine_similarity(embedding1, embedding2, dim=0).item()
-        similarities.append((paper, cosine_similarity))
+            cosine_similarity = torch.nn.functional.cosine_similarity(embedding1, embedding2, dim=0).item()
+            similarities.append((paper, cosine_similarity))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
     for paper, similarity in similarities:
-        print(paper, similarity)
+        # pretty print the similarity and paper
+        print(f"Similarity: {similarity:.2f}, ", paper)
 
 if __name__ == '__main__':
     main()
