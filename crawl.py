@@ -20,7 +20,8 @@ def main():
     elif args.venue == 'icml':
         papers = ps.get_papers(search_term, ps.get_icml_paper_urls, ps.parse_icml_paper_url)
     elif args.venue == 'iclr':
-        years = [2018, 2019, 2020, 2021, 2022, 2023]
+        #years = [2018, 2019, 2020, 2021]
+        years = [2022, 2023]
         papers = []
         for year in years:
             # ICLR is wierd, so we need to use partial functions and create a new function for each year

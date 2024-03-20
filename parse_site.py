@@ -7,6 +7,9 @@ from bs4 import BeautifulSoup
 import tqdm
 import json
 import time
+from datetime import datetime, timezone
+
+
 
 def get_papers(search_term, url_getter, url_parser):
     papers = []
@@ -150,8 +153,6 @@ def parse_openreview_paper_id(id, venue, year):
 
     url = f"https://api.openreview.net/notes?forum={id}"
 
-    # TODO: does not seem to work as expected ... so adding a sleep time
-    time.sleep(1.1)
     def get_response(url):
         while True:
             try:
@@ -159,14 +160,20 @@ def parse_openreview_paper_id(id, venue, year):
                 response.raise_for_status()  # This will raise an exception for 4xx and 5xx status codes
                 return response
             except requests.exceptions.HTTPError as e:
-                error_data = e.response.json()
-                if error_data.get('name') == 'RateLimitError':
-                    reset_time = error_data['details']['resetTime']
-                    # Calculate how long to wait until the rate limit resets
-                    wait_time = max(0, (reset_time - time.time()) + 1)  # Add 1 second to be safe
-                    time.sleep(wait_time)
+                if e.response.text:  # Check if the response is not empty
+                    error_data = e.response.json()
+                    if error_data.get('name') == 'RateLimitError':
+                        reset_time_str = error_data['details']['resetTime']
+                        # Parse the ISO 8601 string and convert it to a timestamp
+                        reset_time = datetime.strptime(reset_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                        # Calculate how long to wait until the rate limit resets
+                        wait_time = max(0, (reset_time - time.time()) + 1)  # Add 1 second to be safe
+                        print(f"Rate limit error. Waiting {wait_time:.2f} seconds until {reset_time_str}...")
+                        time.sleep(wait_time)
+                    else:
+                        raise  # Re-raise the exception if it's not a rate limit error
                 else:
-                    raise  # Re-raise the exception if it's not a rate limit error
+                    raise  # Re-raise the exception if the response is empty
 
     response = get_response(url)
     data = response.json()
@@ -186,7 +193,7 @@ def parse_openreview_paper_id(id, venue, year):
         print(json.dumps(data, indent=4))
     
     url = f"https://openreview.net/forum?id={id}"
-    page = requests.get(url)
+    page = get_response(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
     # Extract the JSON data from the script tag with id '__NEXT_DATA__'
