@@ -30,6 +30,14 @@ def get_sentence_list(name):
             (1, "We consider sound event datasets where the annotators can give either weak or strong labels"),
             (1, "The annotators can give either weak labels or strong labels for the unlabeled audio recording"),
         ]
+    elif name == 'decentralized_learning':
+        return [
+            (1, "Personalized decentralized learning is a promising paradigm for distributed learning, enabling each node to train a local model on its own data and collaborate with other nodes to improve without sharing any data."),
+            (1, "However, this approach poses significant privacy risks, as nodes may inadvertently disclose sensitive information about their data or preferences through their collaboration choices."),
+            (1, "In this paper, we propose Private Personalized Decentralized Learning (PPDL), a novel approach that combines secure aggregation and correlated adversarial multi-armed bandit optimization to protect node privacy while facilitating efficient node selection."),
+            (1, "By leveraging dependencies between different arms, represented by potential collaborators, we demonstrate that PPDL can effectively identify suitable collaborators solely based on aggregated models."),
+            (1, "Additionally, we show that PPDL surpasses previous non-private methods in model performance on standard benchmarks under label and covariate shift scenarios."),
+        ]
     else:
         raise ValueError(f"Unknown sentence list: {name}")
 
