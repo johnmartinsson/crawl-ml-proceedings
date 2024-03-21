@@ -126,7 +126,7 @@ def main():
         f.write("similarity;venue;year;title;authors;url\n")
         for paper, similarity in similarities:
             # write to a file
-            f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title};{paper.authors};{paper.url_pdf}\n")
+            f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.url_pdf};{paper.title};{paper.authors}\n")
 
             # print to the console
             #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
