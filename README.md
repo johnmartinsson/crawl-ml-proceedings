@@ -13,9 +13,10 @@ supported venues:
 - neurips, back to 1988
 - arxiv
 
-# Rank abstracts to own research using LLMs
 Do this for all venues if you want papers from all of them.
+
+# Rank abstract similarity to own abstract
 
     python find_papers.py
 
-This will rank all the abstracts with the predefined abstract in find_papers.py, change to one of your own abstracts.
+This will rank all the abstracts with the predefined abstract in find_papers.py, change to one of your own abstracts for relevant results.
