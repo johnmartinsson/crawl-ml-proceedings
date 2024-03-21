@@ -9,11 +9,50 @@ import json
 import time
 from datetime import datetime, timezone
 
+def matches_query(query, text):
+    # Split the query into terms by 'AND'
+    terms = query.split(' AND ')
 
+    terms = [term.strip('"') for term in terms]
 
-def get_papers(search_term, url_getter, url_parser):
+    # For each term
+    for term in terms:
+        # Split the term into subterms by '+'
+        subterms = term.split('+')
+
+        # Check if all subterms are in the text
+        if not all(subterm in text for subterm in subterms):
+            # If any subterm is not in the text, the whole query does not match
+            return False
+
+    # If we got here, all terms and subterms are in the text
+    return True
+
+def get_response(url):
+    while True:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # This will raise an exception for 4xx and 5xx status codes
+            return response
+        except requests.exceptions.HTTPError as e:
+            if e.response.text:  # Check if the response is not empty
+                error_data = e.response.json()
+                if error_data.get('name') == 'RateLimitError':
+                    reset_time_str = error_data['details']['resetTime']
+                    # Parse the ISO 8601 string and convert it to a timestamp
+                    reset_time = datetime.strptime(reset_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                    # Calculate how long to wait until the rate limit resets
+                    wait_time = max(0, (reset_time - time.time()) + 1)  # Add 1 second to be safe
+                    print(f"Rate limit error. Waiting {wait_time:.2f} seconds until {reset_time_str}...")
+                    time.sleep(wait_time)
+                else:
+                    raise  # Re-raise the exception if it's not a rate limit error
+            else:
+                raise  # Re-raise the exception if the response is empty
+
+def get_papers(query_term, url_getter, url_parser):
     papers = []
-    paper_urls = url_getter(search_term)
+    paper_urls = url_getter(query_term)
     print('loading papers ...')
     for url in tqdm.tqdm(paper_urls):
         paper = url_parser(url)
@@ -23,7 +62,38 @@ def get_papers(search_term, url_getter, url_parser):
             print('Found invalid paper: ', paper)
     return papers
 
-def get_icml_paper_urls(search_term):
+###############################################################################
+# Url getters
+###############################################################################
+
+def get_arxiv_paper_ids(query_term):
+    paper_chunks = 200
+    #url = f"https://arxiv.org/search/?query={query_term}&searchtype=all&source=header&order=-announced_date_first&size={paper_chunks}&abstracts=show&date-date_type=submitted_date&start={start_chunk}"
+    url = f"https://arxiv.org/search/?query={query_term}&searchtype=title&abstracts=show&order=-announced_date_first&size={paper_chunks}"
+    print(url)
+
+    done = False
+    ids = []
+    while not done:
+        # get the page
+        page = get_response(url)
+        soup = BeautifulSoup(page.text, 'html.parser')
+        # Find all 'a' tags with 'href' starting with "https://arxiv.org/abs"
+        links = [a['href'] for a in soup.find_all('a', href=True) if a['href'].startswith('https://arxiv.org/abs')]
+        # Extract the arXiv ID from the URL
+        ids.extend([link.split('/')[-1] for link in links])
+
+        # get the next page
+        next_url = soup.find('a', class_='pagination-next')
+        if next_url:
+            url = 'https://arxiv.org' + next_url['href']
+        else:
+            done = True
+
+    return ids
+
+
+def get_icml_paper_urls(query_term):
     url = 'https://proceedings.mlr.press/'
 
     # get the page
@@ -54,7 +124,7 @@ def get_icml_paper_urls(search_term):
                 # find the title of the paper
                 title = div.find('p', class_='title').text if div.find('p', class_='title') else ''
                 # check if the search term is in the title
-                if search_term in title.lower():
+                if matches_query(query_term, title.lower()):
                     # find the abstract link
                     abstract_tag = div.find('a', text='abs')
                     if abstract_tag:
@@ -63,10 +133,9 @@ def get_icml_paper_urls(search_term):
 
     return paper_urls
 
-def get_neurips_paper_urls(search_term):
+def get_neurips_paper_urls(query_term):
     url = 'https://papers.nips.cc/papers/search?q='
-    search_term = search_term.replace(' ', '+')
-    url += search_term
+    url += query_term
 
     # get the page
     page = requests.get(url)
@@ -80,43 +149,11 @@ def get_neurips_paper_urls(search_term):
         link = li_item.find('a')
         if link is not None:
             if 'paper_files' in link.get('href'):
-                paper_urls.append(link.get('href'))
+                paper_urls.append('https://papers.nips.cc' + link.get('href'))
 
     return paper_urls
 
-# def get_iclr_paper_urls(search_term, year):
-#     paper_urls = []
-#     url = 'https://iclr.cc/virtual/{}/papers.html?filter=titles&search={}'.format(year, search_term.replace(' ', '+'))
-
-#     page = requests.get(url)
-#     soup = BeautifulSoup(page.text, 'html.parser')
-#     li_items = soup.find_all('li')
-
-#     # Extract the URLs
-#     for li_item in li_items:
-#         #print(search_term, li_item.text.lower())
-#         if search_term in li_item.text.lower():
-#             # TODO: not working yet
-#             # openreview_url = find_open_review_url_by_title(li_item.text.lower())
-#             # paper_urls.append(openreview_url)
-
-#             link = li_item.find('a')
-#             if link is not None:
-#                 poster_url = link.get('href')
-#                 poster_page = requests.get('https://iclr.cc' + poster_url)
-#                 poster_soup = BeautifulSoup(poster_page.text, 'html.parser')
-                
-#                 # Find the link with class 'btn btn btn-outline-dark btn-sm href_URL'
-#                 link = poster_soup.find('a', class_='btn btn btn-outline-dark btn-sm href_URL')
-
-#                 # Extract the URL
-#                 openreview_url = link.get('href') if link else None
-#                 paper_urls.append(openreview_url)
-#                 print(year, openreview_url)
-
-#     return paper_urls
-
-def get_iclr_paper_ids(search_term, year='2023'):
+def get_iclr_paper_ids(query_term, year='2023'):
     venue = 'ICLR.cc/{}/Conference'.format(year)
     def get_conference_notes(venue, blind_submission=False):
         """
@@ -142,85 +179,66 @@ def get_iclr_paper_ids(search_term, year='2023'):
     paper_ids = []
     for note in raw_notes:
         title = note['content']['title']
-        if search_term in title.lower():
-            
+        if matches_query(query_term, title.lower()):
             paper_ids.append(note['id'])
     
     return paper_ids
 
-def parse_openreview_paper_id(id, venue, year):
-    # OpenReview API has a rate limit of 100 requests per minute
 
-    url = f"https://api.openreview.net/notes?forum={id}"
+def get_tmlr_paper_urls(query_term):
+    pass
 
-    def get_response(url):
-        while True:
-            try:
-                response = requests.get(url)
-                response.raise_for_status()  # This will raise an exception for 4xx and 5xx status codes
-                return response
-            except requests.exceptions.HTTPError as e:
-                if e.response.text:  # Check if the response is not empty
-                    error_data = e.response.json()
-                    if error_data.get('name') == 'RateLimitError':
-                        reset_time_str = error_data['details']['resetTime']
-                        # Parse the ISO 8601 string and convert it to a timestamp
-                        reset_time = datetime.strptime(reset_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
-                        # Calculate how long to wait until the rate limit resets
-                        wait_time = max(0, (reset_time - time.time()) + 1)  # Add 1 second to be safe
-                        print(f"Rate limit error. Waiting {wait_time:.2f} seconds until {reset_time_str}...")
-                        time.sleep(wait_time)
-                    else:
-                        raise  # Re-raise the exception if it's not a rate limit error
-                else:
-                    raise  # Re-raise the exception if the response is empty
+def get_jmlr_paper_urls(query_term):
+    pass
 
-    response = get_response(url)
-    data = response.json()
+###############################################################################
+# Url parsers
+###############################################################################
 
-    notes = data.get('notes')
-    if notes is not None:
-        #print(json.dumps(notes, indent=4))
-        accepted = False
-        for note in notes:
-            #print(json.dumps(note, indent=4))
-            decision = note['content'].get('decision')
-            if decision is not None:
-                if 'accept' in decision.lower():
-                    accepted = True
-                    break
-    else:
-        print(json.dumps(data, indent=4))
-    
-    url = f"https://openreview.net/forum?id={id}"
+def parse_arxiv_paper_id(id):
+    url = f'https://arxiv.org/abs/{id}'
     page = get_response(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
-    # Extract the JSON data from the script tag with id '__NEXT_DATA__'
-    script_tag = soup.find('script', id='__NEXT_DATA__')
-    data = json.loads(script_tag.string)
+    # Find the elements containing the required information
+    title_element = soup.find('h1', class_='title mathjax')
+    authors_element = soup.find('div', class_='authors')
+    abstract_element = soup.find('blockquote', class_='abstract mathjax')
+    pdf_link_element = soup.find('a', attrs={'accesskey': 'f'})
 
-    # Extract the required information
-    forum_note = data['props']['pageProps']['forumNote']
-    title = forum_note['content']['title']
-    authors = forum_note['content']['authors']
-    venue = venue
-    year = year
-    bibtex = forum_note['content']['_bibtex']
-    url_pdf = 'https://openreview.net' + forum_note['content']['pdf']  # Prepend the base URL
-    abstract = forum_note['content']['abstract']
-    
+    # Extract the text from the elements
+    title = title_element.text.replace('Title: ', '') if title_element else None
+    authors = authors_element.text.replace('\n', ' ').replace('Authors:', '').strip() if authors_element else None
+    abstract = abstract_element.text.replace('\n', ' ').replace('Abstract: ', '').strip() if abstract_element else None
+    url_pdf = 'https://arxiv.org' + pdf_link_element['href'] if pdf_link_element else None
+    venue = 'arxiv'
+
+    # Construct the URL for the BibTeX citation page
+    bibtex_url = f'https://arxiv.org/bibtex/{id}'
+    # Send a GET request to the URL
+    response = requests.get(bibtex_url)
+    # The content of the response is the BibTeX citation
+    bibtex = response.text
+
+    # Extract the year and month from the arXiv ID
+    year, month = id.split('.')[:2]
+
+    # The year is the first two digits of the arXiv ID
+    year = '20' + year[:2]
+
+    # assume false for all arxiv papers
+    accepted = False
+
     return paper.Paper(title, authors, year, venue, bibtex, url_pdf, abstract, accepted)
-
-def get_tmlr_paper_urls(search_term):
-    pass
-
-def get_jmlr_paper_urls(search_term):
-    pass
 
 def parse_icml_paper_url(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
+
+    # pretty print the soup to file
+    with open('icml.html', 'w') as f:
+        f.write(soup.prettify())
+
 
     # get the title
     title_tag = soup.find('meta', attrs={'name': 'citation_title'})
@@ -253,11 +271,14 @@ def parse_icml_paper_url(url):
 
 def parse_neurips_paper_url(url):
     """Parse the paper from the given url and return a Paper object."""
-    url = 'https://papers.nips.cc' + url
 
     # get the page
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
+
+    # pretty print the soup to file
+    with open('nips.html', 'w') as f:
+        f.write(soup.prettify())
 
     # get the title
     title_tag = soup.find('meta', attrs={'name': 'citation_title'})
@@ -296,3 +317,49 @@ def parse_neurips_paper_url(url):
     venue = 'neurips'
 
     return paper.Paper(title, authors, year, venue, bibtex, url_pdf, abstract, accepted=True)
+
+def parse_openreview_paper_id(id, venue, year):
+    # OpenReview API has a rate limit of 100 requests per minute
+
+    url = f"https://api.openreview.net/notes?forum={id}"
+
+    response = get_response(url)
+    data = response.json()
+
+    notes = data.get('notes')
+    if notes is not None:
+        #print(json.dumps(notes, indent=4))
+        accepted = False
+        for note in notes:
+            #print(json.dumps(note, indent=4))
+            decision = note['content'].get('decision')
+            if decision is not None:
+                if 'accept' in decision.lower():
+                    accepted = True
+                    break
+    else:
+        print(json.dumps(data, indent=4))
+    
+    url = f"https://openreview.net/forum?id={id}"
+    page = get_response(url)
+    soup = BeautifulSoup(page.text, 'html.parser')
+
+    # pretty print the soup to file
+    with open('iclr.html', 'w') as f:
+        f.write(soup.prettify())
+
+    # Extract the JSON data from the script tag with id '__NEXT_DATA__'
+    script_tag = soup.find('script', id='__NEXT_DATA__')
+    data = json.loads(script_tag.string)
+
+    # Extract the required information
+    forum_note = data['props']['pageProps']['forumNote']
+    title = forum_note['content']['title']
+    authors = forum_note['content']['authors']
+    venue = venue
+    year = year
+    bibtex = forum_note['content']['_bibtex']
+    url_pdf = 'https://openreview.net' + forum_note['content']['pdf']  # Prepend the base URL
+    abstract = forum_note['content']['abstract']
+    
+    return paper.Paper(title, authors, year, venue, bibtex, url_pdf, abstract, accepted)

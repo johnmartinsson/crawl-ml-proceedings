@@ -18,7 +18,7 @@ def main():
 
     papers = []
     for d in data:
-        papers.append(Paper(title=d[0], authors=d[1].split(', '), venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
+        papers.append(Paper(title=d[0], authors=d[1].split(';'), venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
 
     # Close the connection
     conn.close()
@@ -42,6 +42,11 @@ def main():
     # Calculate the cosine similarity between two abstracts
     abstract1 = "In this work we propose an audio recording segmentation method based on an adaptive change point detection (A-CPD) for machine guided weak label annotation of audio recording segments. The goal is to maximize the amount of information gained about the temporal activation's of the target sounds. For each unlabeled audio recording, we use a prediction model to derive a probability curve used to guide annotation. The prediction model is initially pre-trained on available annotated sound event data with classes that are disjoint from the classes in the unlabeled dataset. The prediction model then gradually adapts to the annotations provided by the annotator in an active learning loop. The queries used to guide the weak label annotator towards strong labels are derived using change point detection on these probabilities. We show that it is possible to derive strong labels of high quality even with a limited annotation budget, and show favorable results for A-CPD when compared to two baseline query strategies."
     embedding1 = encode(abstract1).squeeze()
+
+    # IDEAS
+    # - embed the titles
+    # - embed the keywords
+    # - weighted average of the embeddings (emphasis on title and keywords?)
 
     similarities = []
     for paper in tqdm.tqdm(papers):

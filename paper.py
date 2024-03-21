@@ -18,3 +18,5 @@ class Paper():
     
     def valid_paper(self):
         return self.title and self.authors and self.venue and self.year and self.url_pdf and self.abstract and self.bibtex
+    
+# TODO: maybe implement subclasses for different venues? They have some different information

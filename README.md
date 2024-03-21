@@ -3,9 +3,9 @@ A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bib
 
 # How to use
 
-    python3 crawl.py --venue=iclr --search_term='active learning'
+    python3 crawl.py --venue=iclr --query_term='"active learning" AND "sound"'
 
-This will crawl 'iclr' for papers with 'active learning' in the title and insert them into papers.db.
+This will crawl 'iclr' for papers with "active learning" and "sound" in the title and insert them into papers.db. The query functionality is very limited, but just keep to lower case characters and use the same format as above and it should be fine.
 
 supported venues: 
 - iclr, back to 2018,
