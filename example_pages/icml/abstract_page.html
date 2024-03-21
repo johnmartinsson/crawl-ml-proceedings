@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <!-- Search Engine Info -->
+  <title>
+   Active Learning based Structural Inference
+  </title>
+  <meta content="Active Learning based Structural InferenceAoran Wang, Jun PangIn this paper, we propose a novel framework, Active Learning based Structural Inference (A..." name="description"/>
+  <!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+  <script src="https://proceedings.mlr.press/v202/assets/js/copy_input.js">
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+  </script>
+  <script src="https://proceedings.mlr.press/v202/assets/js/download.js">
+  </script>
+  <meta content="PMLR" name="citation_publisher">
+   <meta content="Active Learning based Structural Inference" name="citation_title">
+    <meta content="en" name="citation_language">
+     <meta content="https://proceedings.mlr.press/v202/wang23ac.html" name="citation_abstract_html_url">
+      <meta content="https://proceedings.mlr.press/v202/wang23ac/wang23ac.pdf" name="citation_pdf_url"/>
+      <meta content="36224" name="citation_firstpage"/>
+      <meta content="36245" name="citation_lastpage"/>
+      <meta content="Aoran Wang" name="citation_author"/>
+      <meta content="Jun Pang" name="citation_author"/>
+      <meta content="2023/07/03" name="citation_publication_date"/>
+      <meta content="International Conference on Machine Learning" name="citation_inbook_title">
+       <meta content="International Conference on Machine Learning" name="citation_conference_title">
+        <meta content="2640-3498" name="citation_issn"/>
+        <meta content="summary" name="twitter:card">
+         <meta content="Active Learning based Structural Inference" name="twitter:title">
+          <meta content="@MLResearchPress" name="twitter:site">
+           <meta content="In this paper, we propose a novel framework, Active Learning based Structural Inference (ALaSI), to infer the existence of directed connections from observed..." name="twitter:description">
+            <meta content="https://proceedings.mlr.press/v202/assets/images/logo-pmlr.png" name="twitter:image">
+             <meta content="PMLR Logo" name="twitter:image:alt"/>
+             <meta content="Active Learning based Structural Inference" property="og:title"/>
+             <meta content="In this paper, we propose a novel framework, Active Learning based Structural Inference (ALaSI), to infer the existence of directed connections from observed agents’ states over a time period in a ..." property="og:description"/>
+             <meta content="article" property="og:type"/>
+             <meta content="2023-07-03T00:00:00+00:00" property="article:published_time"/>
+             <meta content="https://proceedings.mlr.press/v202/wang23ac.html" property="og:url">
+              <meta content="https://proceedings.mlr.press/v202/assets/images/logo-pmlr.png" property="og:image"/>
+              <meta content="PMLR" property="og:site_name"/>
+              <!-- Style Info -->
+              <link href="https://proceedings.mlr.press/v202/assets/css/pmlr.css" rel="stylesheet" type="text/css"/>
+              <style>
+               .hero-text {
+    color: #303030;
+  }
+              </style>
+              <!-- Icon Info -->
+              <link href="https://proceedings.mlr.press/v202/assets/images/favicon-pmlr.ico" rel="shortcut icon" type="image/x-icon"/>
+              <link href="https://proceedings.mlr.press/v202/assets/images/favicon-pmlr.ico" rel="icon" type="image/x-icon"/>
+              <!-- Feed Info -->
+              <link href="https://proceedings.mlr.press/v202/feed.xml" rel="alternate" title="Proceedings of Machine Learning Research" type="application/atom+xml">
+               <!-- Scripting info -->
+               <!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+               <script src="https://proceedings.mlr.press/v202/assets/js/copy_input.js">
+               </script>
+               <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+               </script>
+               <script src="https://proceedings.mlr.press/v202/assets/js/download.js">
+               </script>
+               <script>
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92432422-1', 'auto');
+  ga('send', 'pageview');
+               </script>
+               <script type="text/x-mathjax-config">
+                MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+          autoNumber: "AMS"
+        }
+      },
+      tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(', '\\)'] ],
+      displayMath: [ ['$$','$$'], ['\\[', '\\]'] ],
+      processEscapes: true,
+    }
+  });
+               </script>
+               <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML">
+               </script>
+               <!-- User custom header -->
+              </link>
+             </meta>
+            </meta>
+           </meta>
+          </meta>
+         </meta>
+        </meta>
+       </meta>
+      </meta>
+     </meta>
+    </meta>
+   </meta>
+  </meta>
+ </head>
+ <body>
+  <header class="site-header">
+   <div class="wrapper">
+    <div class="hero-image">
+     <div class="hero-text">
+      <a href="/" target="_top">
+       <img alt="[International Conference on Machine Learning Logo]" src="/v202/assets/images/logo-pmlr.svg"/>
+      </a>
+      Proceedings of Machine Learning Research
+     </div>
+    </div>
+    <nav class="site-nav">
+     <input class="nav-trigger" id="nav-trigger" type="checkbox"/>
+     <label for="nav-trigger">
+      <span class="menu-icon">
+       <svg height="15px" viewbox="0 0 18 15" width="18px">
+        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z">
+        </path>
+       </svg>
+      </span>
+     </label>
+     <div class="trigger">
+      <a class="page-link" href="https://proceedings.mlr.press/v202/">
+       Volume 202
+      </a>
+      <a class="page-link" href="https://www.jmlr.org/">
+       JMLR
+      </a>
+      <a class="page-link" href="https://data.mlr.press/">
+       DMLR
+      </a>
+      <a class="page-link" href="https://jmlr.org/tmlr/">
+       TMLR
+      </a>
+      <a class="page-link" href="https://www.jmlr.org/mloss">
+       MLOSS
+      </a>
+      <a class="page-link" href="/faq.html">
+       FAQ
+      </a>
+      <a class="page-link" href="/spec.html">
+       Submission Format
+      </a>
+      <a class="page-link" href="https://proceedings.mlr.press//v202/assets/rss/feed.xml">
+       <img alt="RSS Feed" class="rss" src="https://proceedings.mlr.press/v202/assets/images/RSS.gif"/>
+      </a>
+     </div>
+    </nav>
+   </div>
+  </header>
+  <main aria-label="Content" class="page-content">
+   <div class="wrapper">
+    <p style="text-align:right">
+     [
+     <a href="https://github.com/mlresearch/v202/edit/gh-pages/_posts/2023-07-03-wang23ac.md" onclick="ga('send', 'event', 'Edit Page', 'Edit', 'https://github.com/mlresearch/v202/edit/gh-pages/_posts/2023-07-03-wang23ac.md', 13);" target="_blank">
+      edit
+     </a>
+     ]
+    </p>
+    <article class="post-content">
+     <h1>
+      Active Learning based Structural Inference
+     </h1>
+     <span class="authors">
+      Aoran Wang, Jun Pang
+     </span>
+     <div id="info">
+      <i>
+       Proceedings of the 40th International Conference on Machine Learning
+      </i>
+      , PMLR 202:36224-36245, 2023.
+     </div>
+     <!-- info -->
+     <h4>
+      Abstract
+     </h4>
+     <div class="abstract" id="abstract">
+      In this paper, we propose a novel framework, Active Learning based Structural Inference (ALaSI), to infer the existence of directed connections from observed agents’ states over a time period in a dynamical system. With the help of deep active learning, ALaSI is competent in learning the representation of connections with a relatively small pool of prior knowledge. Moreover, based on information theory, the proposed inter- and out-of-scope message learning pipelines are remarkably beneficial to structural inference for large dynamical systems. We evaluate ALaSI on various large datasets including simulated systems and real-world networks, to demonstrate that ALaSI is able to outperform previous methods in precisely inferring the existence of connections in large systems under either supervised learning or unsupervised learning.
+     </div>
+     <h4>
+      Cite this Paper
+     </h4>
+     <hr class="bibhr"/>
+     <div class="bibbuttongroup row row--justified">
+      <div class="bibbuttontext column">
+       BibTeX
+      </div>
+      <div class="column">
+       <div class="codebox">
+        <code class="citecode" id="bibtex">
+         @InProceedings{pmlr-v202-wang23ac,
+  title = 	 {Active Learning based Structural Inference},
+  author =       {Wang, Aoran and Pang, Jun},
+  booktitle = 	 {Proceedings of the 40th International Conference on Machine Learning},
+  pages = 	 {36224--36245},
+  year = 	 {2023},
+  editor = 	 {Krause, Andreas and Brunskill, Emma and Cho, Kyunghyun and Engelhardt, Barbara and Sabato, Sivan and Scarlett, Jonathan},
+  volume = 	 {202},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {23--29 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v202/wang23ac/wang23ac.pdf},
+  url = 	 {https://proceedings.mlr.press/v202/wang23ac.html},
+  abstract = 	 {In this paper, we propose a novel framework, Active Learning based Structural Inference (ALaSI), to infer the existence of directed connections from observed agents’ states over a time period in a dynamical system. With the help of deep active learning, ALaSI is competent in learning the representation of connections with a relatively small pool of prior knowledge. Moreover, based on information theory, the proposed inter- and out-of-scope message learning pipelines are remarkably beneficial to structural inference for large dynamical systems. We evaluate ALaSI on various large datasets including simulated systems and real-world networks, to demonstrate that ALaSI is able to outperform previous methods in precisely inferring the existence of connections in large systems under either supervised learning or unsupervised learning.}
+}
+        </code>
+       </div>
+       <button class="button" id="button-bibtex1" onclick="CopyToClipboard('bibtex');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v202/pmlr-v202-wang23ac.bib', 15);">
+        Copy to Clipboard
+       </button>
+       <button class="button" id="button-bibtex2" onclick="DownloadTexToFile('pmlr-v202-wang23ac.bib', 'bibtex'); ga('send', 'event', 'Ref Downloads', 'Download', '/v202/pmlr-v202-wang23ac.bib', 16);">
+        Download
+       </button>
+      </div>
+     </div>
+     <div class="bibbuttongroup row row--justified">
+      <div class="bibbuttontext column">
+       Endnote
+      </div>
+      <div class="column">
+       <div class="codebox">
+        <code class="citecode" id="endnote">
+         %0 Conference Paper
+%T Active Learning based Structural Inference
+%A Aoran Wang
+%A Jun Pang
+%B Proceedings of the 40th International Conference on Machine Learning
+%C Proceedings of Machine Learning Research
+%D 2023
+%E Andreas Krause
+%E Emma Brunskill
+%E Kyunghyun Cho
+%E Barbara Engelhardt
+%E Sivan Sabato
+%E Jonathan Scarlett	
+%F pmlr-v202-wang23ac
+%I PMLR
+%P 36224--36245
+%U https://proceedings.mlr.press/v202/wang23ac.html
+%V 202
+%X In this paper, we propose a novel framework, Active Learning based Structural Inference (ALaSI), to infer the existence of directed connections from observed agents’ states over a time period in a dynamical system. With the help of deep active learning, ALaSI is competent in learning the representation of connections with a relatively small pool of prior knowledge. Moreover, based on information theory, the proposed inter- and out-of-scope message learning pipelines are remarkably beneficial to structural inference for large dynamical systems. We evaluate ALaSI on various large datasets including simulated systems and real-world networks, to demonstrate that ALaSI is able to outperform previous methods in precisely inferring the existence of connections in large systems under either supervised learning or unsupervised learning.
+        </code>
+       </div>
+       <button class="button" id="button-endnote1" onclick="CopyToClipboard('endnote');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v202/pmlr-v202-wang23ac.enw', 15);">
+        Copy to Clipboard
+       </button>
+       <button class="button" id="button-endnote2" onclick="DownloadTexToFile('pmlr-v202-wang23ac.enw', 'endnote'); ga('send', 'event', 'Ref Downloads', 'Download', '/v202/pmlr-v202-wang23ac.enw', 16);">
+        Download
+       </button>
+      </div>
+     </div>
+     <div class="bibbuttongroup row row--justified">
+      <div class="bibbuttontext column">
+       APA
+      </div>
+      <div class="column">
+       <div class="codebox">
+        <code class="citecode" id="apa">
+         Wang, A. &amp; Pang, J.. (2023). Active Learning based Structural Inference.
+         <i>
+          Proceedings of the 40th International Conference on Machine Learning
+         </i>
+         , in
+         <i>
+          Proceedings of Machine Learning Research
+         </i>
+         202:36224-36245 Available from https://proceedings.mlr.press/v202/wang23ac.html.
+        </code>
+       </div>
+       <button class="button" id="button-apa1" onclick="CopyToClipboard('apa');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v202/pmlr-v202-wang23ac.txt', 15);">
+        Copy to Clipboard
+       </button>
+       <button class="button" id="button-apa2" onclick="DownloadTexToFile('pmlr-v202-wang23ac.txt', 'apa'); ga('send', 'event', 'Ref Downloads', 'Download', '/v202/pmlr-v202-wang23ac.txt', 16);">
+        Download
+       </button>
+      </div>
+     </div>
+     <hr class="bibhr"/>
+     <h4>
+      Related Material
+     </h4>
+     <div id="extras">
+      <ul>
+       <li>
+        <a href="https://proceedings.mlr.press/v202/wang23ac/wang23ac.pdf" onclick="ga('send', 'event', 'PDF Downloads', 'Download', 'https://proceedings.mlr.press/v202/wang23ac/wang23ac.pdf', 10);" target="_blank">
+         Download PDF
+        </a>
+       </li>
+       <li>
+        <a href="https://openreview.net/forum?id=5Z31keXfbQ" onclick="ga('send', 'event', 'OpenReview site', 'Openreview', 'https://openreview.net/forum?id=5Z31keXfbQ', 10);" target="_blank">
+         OpenReview
+        </a>
+       </li>
+      </ul>
+     </div>
+    </article>
+   </div>
+  </main>
+  <footer class="site-footer">
+   <div class="wrapper">
+    <p>
+     This site last compiled Fri, 27 Oct 2023 17:07:25 +0000
+    </p>
+    <div class="footer-left">
+     <i>
+      <a href="https://github.com/mlresearch/v202">
+       Github Account
+      </a>
+     </i>
+    </div>
+    <div class="footer-right">
+     Copyright ©
+     <a href="https://proceedings.mlr.press">
+      The authors and PMLR
+     </a>
+     2023.
+     <a href="https://twitter.com/MLResearchPress">
+      <i class="icon-twitter">
+      </i>
+      MLResearchPress
+     </a>
+    </div>
+   </div>
+  </footer>
+ </body>
+</html>

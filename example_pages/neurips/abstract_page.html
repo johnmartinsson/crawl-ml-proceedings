@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+  <title>
+   Annotator: A Generic Active Learning Baseline for LiDAR Semantic Segmentation
+  </title>
+  <link href="/static/papers/css/papers.css" rel="stylesheet"/>
+  <meta content="Annotator: A Generic Active Learning Baseline for LiDAR Semantic Segmentation" name="citation_title"/>
+  <meta content="Xie, Binhui" name="citation_author"/>
+  <meta content="Li, Shuang" name="citation_author"/>
+  <meta content="Guo, Qingju" name="citation_author"/>
+  <meta content="Liu, Chi" name="citation_author"/>
+  <meta content="Cheng, Xinjing" name="citation_author"/>
+  <meta content="Advances in Neural Information Processing Systems" name="citation_journal_title"/>
+  <meta content="36" name="citation_volume"/>
+  <meta content="48444" name="citation_firstpage"/>
+  <meta content="48458" name="citation_lastpage"/>
+  <meta content="https://proceedings.neurips.cc/paper_files/paper/2023/file/976cc04f0cbaad7790ce0d665e44f90f-Paper-Conference.pdf" name="citation_pdf_url"/>
+  <meta content="2023-12-15" name="citation_publication_date"/>
+  <!-- Bootstrap CSS -->
+  <!-- https://codepen.io/surjithctly/pen/PJqKzQ -->
+  <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" rel="stylesheet"/>
+  <link href="/static/menus/css/menus.css" id="bootstrap-css" rel="stylesheet"/>
+  <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" rel="stylesheet"/>
+  <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript">
+  </script>
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+      "tex2jax": {
+        "inlineMath": [["$","$"], ["\\(","\\)"]],
+        "displayMath": [["\\[","\\]"]],
+        "processEscapes": true
+      }
+    }
+    );
+  </script>
+  <style>
+   @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #333;
+                color: #eee;
+            }
+        }
+
+        .btn-spacer {
+            margin: 2px;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #eee;
+            color: black;
+        }
+  </style>
+ </head>
+ <body>
+  <nav class="navbar navbar-expand-md navbar-light bg-light">
+   <button aria-controls="navbarToggler6" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarToggler6" data-toggle="collapse" type="button">
+    <span class="navbar-toggler-icon">
+    </span>
+   </button>
+   <div class="collapse navbar-collapse" id="navbarToggler6">
+    <a class="navbar-brand" href="/">
+     NeurIPS Proceedings
+    </a>
+    <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+     <li class="nav-item">
+      <a class="nav-link" href="/admin/login/?next=/admin/">
+       <i class="fas fa-sign-in-alt" title="Login">
+       </i>
+      </a>
+     </li>
+     <li class="nav-item">
+      <a class="nav-link" href="/admin/logout/?nextp=/admin">
+       <i class="fas fa-sign-out-alt" title="Logout">
+       </i>
+      </a>
+     </li>
+    </ul>
+    <form action="/papers/search" class="form-inline my-2 my-lg-0" method="get" role="search">
+     <input aria-label="Search" class="form-control mr-sm-2" id="navsearch" name="q" placeholder="Search" type="text"/>
+     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+      Search
+     </button>
+    </form>
+   </div>
+  </nav>
+  <br/>
+  <div class="container-fluid">
+   <div class="col">
+    <h4>
+     Annotator: A Generic Active Learning Baseline for LiDAR Semantic Segmentation
+    </h4>
+    <p>
+     Part of
+     <a href="/paper_files/paper/2023">
+      Advances in Neural Information Processing Systems 36  (NeurIPS 2023)
+     </a>
+     Main Conference Track
+    </p>
+    <div>
+     <a class="btn btn-light btn-spacer" href="/paper_files/paper/20059-/bibtex">
+      Bibtex
+     </a>
+     <a class="btn btn-primary btn-spacer" href="/paper_files/paper/2023/file/976cc04f0cbaad7790ce0d665e44f90f-Paper-Conference.pdf">
+      Paper
+     </a>
+     <a class="btn btn-light btn-spacer" href="/paper_files/paper/2023/file/976cc04f0cbaad7790ce0d665e44f90f-Supplemental-Conference.pdf">
+      Supplemental
+     </a>
+    </div>
+    <br/>
+    <h4>
+     Authors
+    </h4>
+    <p>
+     <i>
+      Binhui Xie, Shuang Li, Qingju Guo, Chi Liu, Xinjing Cheng
+     </i>
+    </p>
+    <h4>
+     Abstract
+    </h4>
+    <p>
+     <p>
+      Active learning, a label-efficient paradigm, empowers models to interactively query an oracle for labeling new data. In the realm of LiDAR semantic segmentation, the challenges stem from the sheer volume of point clouds, rendering annotation labor-intensive and cost-prohibitive. This paper presents Annotator, a general and efficient active learning baseline, in which a voxel-centric online selection strategy is tailored to efficiently probe and annotate the salient and exemplar voxel girds within each LiDAR scan, even under distribution shift. Concretely, we first execute an in-depth analysis of several common selection strategies such as Random, Entropy, Margin, and then develop voxel confusion degree (VCD) to exploit the local topology relations and structures of point clouds. Annotator excels in diverse settings, with a particular focus on active learning (AL), active source-free domain adaptation (ASFDA), and active domain adaptation (ADA). It consistently delivers exceptional performance across LiDAR semantic segmentation benchmarks, spanning both simulation-to-real and real-to-real scenarios. Surprisingly, Annotator exhibits remarkable efficiency, requiring significantly fewer annotations, e.g., just labeling five voxels per scan in the SynLiDAR → SemanticKITTI task. This results in impressive performance, achieving 87.8% fully-supervised performance under AL, 88.5% under ASFDA, and 94.4% under ADA. We envision that Annotator will offer a simple, general, and efficient solution for label-efficient 3D applications.
+     </p>
+    </p>
+   </div>
+  </div>
+  <script crossorigin="anonymous" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" src="https://code.jquery.com/jquery-3.6.0.min.js">
+  </script>
+  <script crossorigin="anonymous" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js">
+  </script>
+  <script crossorigin="anonymous" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js">
+  </script>
+  <script>
+   $('.dropdown-menu a.dropdown-toggle').on('click', function (e) {
+        if (!$(this).next().hasClass('show')) {
+            $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+        }
+        var $subMenu = $(this).next(".dropdown-menu");
+        $subMenu.toggleClass('show');
+
+
+        $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
+            $('.dropdown-submenu .show').removeClass("show");
+        });
+
+
+        return false;
+    });
+  </script>
+  <br/>
+  <div class="modal fade" id="myModal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h4 class="modal-title">
+       Name Change Policy
+      </h4>
+      <button aria-hidden="true" class="close" data-dismiss="modal" type="button pull-right">
+       ×
+      </button>
+     </div>
+     <div class="modal-body">
+      <p>
+       Requests for name changes in the electronic proceedings will be accepted with no questions asked.  However name changes may cause bibliographic tracking issues.  Authors are asked to consider this carefully and discuss it with their co-authors prior to requesting a name change in the electronic proceedings.
+      </p>
+      <p>
+       Use the "Report an Issue" link to request a name change.
+      </p>
+     </div>
+     <div class="modal-footer">
+     </div>
+    </div>
+    <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+  <footer class="footer">
+   <div class="btn-spacer">
+    <a href="https://neurips.cc/Help/Contact?select=Conference">
+     Report an Issue
+    </a>
+    |
+    <a class="modal-link" data-target="#myModal" data-toggle="modal" href="#">
+     Name Change Policy
+    </a>
+   </div>
+  </footer>
+  <div class="hidden">
+   Do not remove: This comment is monitored to verify that the site is working properly
+  </div>
+  <!-- Do not remove: This comment is monitored to verify that the site is working properly -->
+ </body>
+</html>
