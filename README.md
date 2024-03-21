@@ -19,6 +19,6 @@ ICLR constrains the number of queries, so this takes time if you have many hits.
 
 # Rank abstract similarity to own abstract
 
-    python find_papers.py
+    python find_papers.py --database=papers.db --random_papers=0 --sentence_list_name=default
 
-This will rank all the abstracts with the predefined abstract in find_papers.py, change to one of your own abstracts for relevant results.
+This will rank all the abstracts with the predefined weighted sentences in the sentence list "detault" in find_papers.py, change to your liking to get relevant hits.
