@@ -56,11 +56,14 @@ def get_papers(query_term, url_getter, url_parser):
     paper_urls = url_getter(query_term)
     print('loading papers ...')
     for url in tqdm.tqdm(paper_urls):
-        paper = url_parser(url)
-        if paper.valid_paper():
-            papers.append(paper)
-        else:
-            print('Found invalid paper: ', paper)
+        try:
+            paper = url_parser(url)
+            if paper.valid_paper():
+                papers.append(paper)
+            else:
+                print('Found invalid paper: ', paper)
+        except Exception as e:
+            print('Error parsing paper: ', url)
     return papers
 
 ###############################################################################
