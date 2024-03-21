@@ -30,6 +30,16 @@ def get_sentence_list(name):
             (1, "We consider sound event datasets where the annotators can give either weak or strong labels"),
             (1, "The annotators can give either weak labels or strong labels for the unlabeled audio recording"),
         ]
+    elif name == 'time_frequency':
+        return [
+            (1, "In this paper we present the differentiable log-Mel spectrogram (DMEL) for audio classification."),
+            (1, "DMEL uses a Gaussian window, with a window length that can be jointly optimized with the neural network."),
+            (1, "DMEL is used as the input layer in different neural networks and evaluated on standard audio datasets."),
+            (1, "We show that DMEL achieves a higher average test accuracy for sub-optimal initial choices of the window length when compared to a baseline with a fixed window length."),
+            (1, "In addition, we analyse the computational cost of DMEL and compare to a standard hyperparameter search over different window lengths, showing favorable results for DMEL."),
+            (1, "Finally, an empirical evaluation on a carefully designed dataset is performed to investigate if the differentiable spectrogram actually learns the optimal window length."),
+            (1, "The design of the dataset relies on the theory of spectrogram resolution. We also empirically evaluate the convergence rate to the optimal window length.")
+        ]
     elif name == 'decentralized_learning':
         return [
             (1, "Personalized decentralized learning is a promising paradigm for distributed learning, enabling each node to train a local model on its own data and collaborate with other nodes to improve without sharing any data."),
@@ -128,6 +138,7 @@ def main():
             # write to a file
             f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.url_pdf};{paper.title};{paper.authors}\n")
 
+            print(paper.abstract)
             # print to the console
             #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
 
