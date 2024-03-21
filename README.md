@@ -21,4 +21,4 @@ ICLR constrains the number of queries, so this takes time if you have many hits.
 
     python find_papers.py --database=papers.db --random_papers=0 --sentence_list_name=default
 
-This will rank all the abstracts with the predefined weighted sentences in the sentence list "detault" in find_papers.py, change to your liking to get relevant hits.
+This will rank all the abstracts with the predefined weighted sentences in the sentence list "detault" in find_papers.py, change to your liking to get relevant hits. If you set --random_papers > 0 a random selection of all papers will be chosen for the ranking. Can be good when building a new sentence list to iterate quickly and get a feeling for what type of matches it produces.
