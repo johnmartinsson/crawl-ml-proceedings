@@ -62,7 +62,7 @@ def main():
 
     papers = []
     for d in data:
-        papers.append(Paper(title=d[0], authors=d[1].split(';'), venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
+        papers.append(Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
 
     # Close the connection
     conn.close()
@@ -123,13 +123,13 @@ def main():
 
     similarities.sort(key=lambda x: x[1], reverse=True)
     with open('similar_papers.txt', 'w') as f:
-        f.write("similarity;venue;year;title\n")
+        f.write("similarity;venue;year;title;authors;url\n")
         for paper, similarity in similarities:
             # write to a file
-            f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}\n")
+            f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title};{paper.authors};{paper.url_pdf}\n")
 
             # print to the console
-            print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
+            #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
 
 if __name__ == '__main__':
     main()

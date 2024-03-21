@@ -62,7 +62,7 @@ def main():
             c.execute("""
                 INSERT OR REPLACE INTO papers 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (paper.title, ";".join(paper.authors), paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, query_term, paper.accepted))
+            """, (paper.title, paper.authors, paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, query_term, paper.accepted))
             conn.commit()
     conn.close()
 
