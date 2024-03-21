@@ -17,7 +17,7 @@ Run this command for all venues and query_terms that you want to use to crawl pa
 
 ICLR constrains the number of queries, so this takes time if you have many hits. It is also a bit buggy still and may crash.
 
-# Rank abstract similarity to own abstract
+# Rank abstract similarity to a pre-defined weighted sentence list
 
     python find_papers.py --database=papers.db --random_papers=0 --sentence_list_name=default
 
