@@ -5,7 +5,11 @@ A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bib
 
     python3 crawl.py --venue=arxiv --query_term='"active learning"' --database=papers.db
 
-This will crawl 'arxiv' for papers with "active learning" in the title and insert them into papers.db. The query functionality is limited, but just keep to lower case characters and use the same format as above and it should be fine.
+This will crawl 'arxiv' for papers with "active learning" in the title and insert them into papers.db. The query functionality is limited, but just keep to lower case characters and use the same format as above and it should be fine. It can handle
+
+    '"words to match" AND "otherword"'
+
+which will make sure that "words to match" appears as is in the title of the paper, and that "otherword" appears in the title. (I hope.)
 
 supported venues: 
 - iclr, back to 2018,
