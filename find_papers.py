@@ -7,6 +7,8 @@ import tqdm
 import argparse
 import random
 
+from multiprocessing import Pool
+
 def get_sentence_list(name):
     """
     Get a weighted list of sentences to compare title and abstract to in embedding space. The weight indicates the relative importance of the sentence.
@@ -94,20 +96,39 @@ def main():
     sentence_embedding = sentence_embedding / sum([weight for weight, _ in sentence_list])
         
     # IDEAS
-    similarities = []
-    for paper in tqdm.tqdm(papers):
+    # parallelize the computation of the similarities and append to a list
+        
+    def compute_similarity(paper):
         if paper.accepted:
             other_abstract = paper.abstract
             other_title = paper.title
 
             other_abstract_embedding = encode(other_abstract).squeeze()
             other_title_embedding = encode(other_title).squeeze()
-            
-            # TODO: not sure how to combine the two embeddings
+
             other_embedding = 0.5 * other_abstract_embedding + 0.5 * other_title_embedding
             similarity = torch.nn.functional.cosine_similarity(sentence_embedding, other_embedding, dim=0).item()
+
+            return (paper, similarity)
+
+    # Create a pool of worker processes
+    with Pool() as p:
+        similarities = list(tqdm.tqdm(p.imap(compute_similarity, papers), total=len(papers)))
+
+    # similarities = []
+    # for paper in tqdm.tqdm(papers):
+    #     if paper.accepted:
+    #         other_abstract = paper.abstract
+    #         other_title = paper.title
+
+    #         other_abstract_embedding = encode(other_abstract).squeeze()
+    #         other_title_embedding = encode(other_title).squeeze()
             
-            similarities.append((paper, similarity))
+    #         # TODO: not sure how to combine the two embeddings
+    #         other_embedding = 0.5 * other_abstract_embedding + 0.5 * other_title_embedding
+    #         similarity = torch.nn.functional.cosine_similarity(sentence_embedding, other_embedding, dim=0).item()
+            
+    #         similarities.append((paper, similarity))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
     with open('similar_papers.txt', 'w') as f:
