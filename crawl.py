@@ -9,6 +9,7 @@ def main():
     parser = argparse.ArgumentParser(description='Crawl machine learning proceedings for papers')
     parser.add_argument('--query_term', type=str, help='The query search term for the papers')
     parser.add_argument('--venue', type=str, help='The venue to search for the papers in')
+    parser.add_argument('--database', type=str, help='The database to store the papers in')
     args = parser.parse_args()
 
     query_term = args.query_term
@@ -37,7 +38,7 @@ def main():
         print('Venue not supported')
 
     # store the paper in the database
-    conn = sqlite3.connect('papers.db')
+    conn = sqlite3.connect(args.database)
     c = conn.cursor()
     # Create table
     c.execute("""

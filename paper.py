@@ -14,7 +14,7 @@ class Paper():
         # pad title with spaces up to 100 characters
         #title = self.title.ljust(200)
         venue = self.venue.ljust(7)
-        return f"{venue}, {self.year}, {self.title}"
+        return f"{venue}; {self.year}; {self.title}"
     
     def valid_paper(self):
         return self.title and self.authors and self.venue and self.year and self.url_pdf and self.abstract and self.bibtex

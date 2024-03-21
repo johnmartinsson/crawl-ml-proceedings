@@ -37,6 +37,7 @@ def get_response(url):
         except requests.exceptions.HTTPError as e:
             if e.response.text:  # Check if the response is not empty
                 error_data = e.response.json()
+                
                 if error_data.get('name') == 'RateLimitError':
                     reset_time_str = error_data['details']['resetTime']
                     # Parse the ISO 8601 string and convert it to a timestamp
@@ -195,8 +196,34 @@ def get_jmlr_paper_urls(query_term):
 # Url parsers
 ###############################################################################
 
+def get_arxiv_paper_url_and_year(id):
+    # check if id format yy.mmnnnn (post 2007) or yymmnnn (pre 2007)
+    if '.' in id:
+        # post 2007 identifier scheme, yymm.nnnn
+        url = f'https://arxiv.org/abs/{id}'
+        # Extract the year and month from the arXiv ID
+        year, _ = id.split('.')[:2]
+
+        # The year is the first two digits of the arXiv ID
+        year = '20' + year[:2]
+    else:
+        # pre 2007 identifier scheme, yymmnnn
+        url = f'https://arxiv.org/abs/cs/{id}'
+        # Extract the year from the arXiv ID
+        yy = int(id[:2])
+        
+        # WARNING: This will map papers from 1900-1907 to 2000-2007
+        if yy > 7:
+            year = '19' + id[:2]
+        else:
+            year = '20' + id[:2]
+
+    return url, year
+
 def parse_arxiv_paper_id(id):
-    url = f'https://arxiv.org/abs/{id}'
+    url, year = get_arxiv_paper_url_and_year(id)
+
+    #try:
     page = get_response(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
@@ -220,11 +247,7 @@ def parse_arxiv_paper_id(id):
     # The content of the response is the BibTeX citation
     bibtex = response.text
 
-    # Extract the year and month from the arXiv ID
-    year, month = id.split('.')[:2]
 
-    # The year is the first two digits of the arXiv ID
-    year = '20' + year[:2]
 
     # assume false for all arxiv papers
     accepted = False
