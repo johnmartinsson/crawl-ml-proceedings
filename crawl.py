@@ -64,6 +64,8 @@ def main():
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (paper.title, paper.authors, paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, query_term, paper.accepted))
             conn.commit()
+        else:
+            print('Invalid paper: ', paper)
     conn.close()
 
     # print the papers

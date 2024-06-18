@@ -6,6 +6,7 @@ from paper import Paper
 import tqdm
 import argparse
 import random
+import csv
 
 from multiprocessing import Pool
 
@@ -60,22 +61,43 @@ def main():
     parser.add_argument('--sentence_list_name', type=str, help='Name of the sentence list to compare with', default='')
     args = parser.parse_args()
 
-    # Connect to the SQLite database
-    conn = sqlite3.connect(args.database)
-    c = conn.cursor()
-
-    # Select all papers
-    c.execute("SELECT * FROM papers")
-
-    # Fetch all the rows
-    data = c.fetchall()
-
     papers = []
-    for d in data:
-        papers.append(Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
+    if args.database.endswith('.db'):
+        # Connect to the SQLite database
+        conn = sqlite3.connect(args.database)
+        c = conn.cursor()
 
-    # Close the connection
-    conn.close()
+        # Select all papers
+        c.execute("SELECT * FROM papers")
+
+        # Fetch all the rows
+        data = c.fetchall()
+
+        
+        for d in data:
+            papers.append(Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
+
+        # Close the connection
+        conn.close()
+    elif args.database.endswith('.csv'):
+        if 'ieee' in args.database:
+            with open(args.database, 'r') as f:
+                reader = csv.reader(f)
+                next(reader)  # Skip the header row
+                for row in reader:
+                    title = row[0]
+                    authors = row[1]
+                    venue = 'ICASSP' #row[3]
+                    year = row[5]
+                    abstract = row[10]
+                    url_pdf = row[15]
+                    # Assuming that a paper is accepted if it has a PDF link
+                    accepted = bool(url_pdf)
+                    papers.append(Paper(title=title, authors=authors, venue=venue, year=year, bibtex=None, abstract=abstract, url_pdf=url_pdf, accepted=accepted))
+        else:
+            raise ValueError("Unknown CSV file")
+    else:
+        raise ValueError("Unknown database file")
 
     print("number of papers: ", len(papers))
     if args.random_papers > 0:
@@ -103,6 +125,7 @@ def main():
     #title_embedding = encode(title).squeeze()
 
     sentence_list = get_sentence_list(args.sentence_list_name)
+    print("sentence_list: ", sentence_list)
     sentence_embedding = None
     for sentence in sentence_list:
         weight, text = sentence
