@@ -22,6 +22,6 @@ venues=(
 for term in "${query_terms[@]}"; do
     for venue in "${venues[@]}"; do
 	# papers with the query term in title are added to the database
-        python3 crawl.py --query_term="$term" --database=databases/noisy_labels.db --venue="$venue"
+        python3 src/crawl.py --query_term="$term" --database=databases/noisy_labels.db --venue="$venue"
     done
 done
