@@ -56,7 +56,7 @@ Many papers can be selected by CTRL or SHIFT selecting, and then all abstracts o
 # Rank abstract similarity to a pre-defined weighted sentence list using transformers
 If this has not been run the 'similarity' column when displaying papers will be '0'. However, if you want to sort papers according to abstract similarity to a pre-defined weighted sentence list using transformers, then run this command:
 
-    python compute_similarities.py --database=databases/noisy_labels.db --random_papers=0 --sentence_list_name=noisy_labels
+    python src/compute_similarities.py --database=databases/noisy_labels.db --random_papers=0 --sentence_list_name=noisy_labels
 
 This will rank all the paper abstracts with the predefined weighted sentences in the sentence list "noisy_labels" in compute_similarities.py, change to your liking to get relevant similarity scores. If you set --random_papers > 0 a random selection of all papers will be chosen for the ranking. Can be useful when building a new sentence list to iterate quickly and get a feeling for what type of matches it produces.
 
