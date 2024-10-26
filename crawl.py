@@ -13,6 +13,10 @@ def main():
     parser.add_argument('--database', type=str, help='The database to store the papers in')
     args = parser.parse_args()
 
+    # if database directory does not exist, create it
+    if not os.path.exists(os.path.dirname(args.database)):
+        os.makedirs(os.path.dirname(args.database))
+
     query_term = args.query_term
     #query_term = query_term.lower()
 
