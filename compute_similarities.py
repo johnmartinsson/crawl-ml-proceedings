@@ -7,6 +7,7 @@ import tqdm
 import argparse
 import random
 import csv
+import json
 
 from multiprocessing import Pool
 
@@ -23,6 +24,17 @@ def get_sentence_list(name):
     if name == 'default':
         return [
             (1, "From Weak to Strong Sound Event Labels using Adaptive Change-Point Detection and Active Learning"),
+        ]
+    elif name == 'weak_labels':
+        return [
+            #(1, "A common way to annotate sound events in audio recordings is to divide the audio fixed and equal length segments to an annotator who gives each segment a presence label for a given class."),
+            #(1, "The length of the segments affect the annotation quality, and shorter segments mean that the annotator needs to assign more presence labels for a given recording."),
+            #(1, "In order to better understand the limits of weak labeling fixed length segments we model this annotation process and derive expressions for the expected label accuracy and the associated number of presence label assignments."),
+            #(1, "We show how the label accuracy of the fixed length weak labeling method depends on the modeled annotator, and that the number of presence label assignments needed for the optimal fixed segment length grows linearly with the length of the audio recording to annotate, while the cost of the oracle method grows linearly with the number of events occurring in the recording."),
+            (1, "Detailed analysis on the impact of weak labels on sound event tagging systems by varying the impact of noise introduced by the weak label"),
+            (1, "Analysis of the effect of noisy labels on classification models."),
+            (1, "Quantify the amount of label noise and understand the effect on classification models."),
+            (1, "Quantify label error from weak or partial labels, where segments of data are annotated with presence or absence of a class, and study the effect on classification models.")
         ]
     elif name == 'multi_annotator':
         return [
@@ -48,6 +60,12 @@ def get_sentence_list(name):
             (1, "In this paper, we propose Private Personalized Decentralized Learning (PPDL), a novel approach that combines secure aggregation and correlated adversarial multi-armed bandit optimization to protect node privacy while facilitating efficient node selection."),
             (1, "By leveraging dependencies between different arms, represented by potential collaborators, we demonstrate that PPDL can effectively identify suitable collaborators solely based on aggregated models."),
             (1, "Additionally, we show that PPDL surpasses previous non-private methods in model performance on standard benchmarks under label and covariate shift scenarios."),
+        ]
+    elif name == 'theory_of_annotation':
+        return [
+            (1, "In this paper we present a theoretical framework for the annotation."),
+            (1, "A theoretical analysis of fixed and equal length query segments is presented."),
+            (1, "The limits of label quality when asking the annotator to annotate images patches is presented."),
         ]
     else:
         raise ValueError(f"Unknown sentence list: {name}")
@@ -75,7 +93,11 @@ def main():
 
         
         for d in data:
-            papers.append(Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=d[7]))
+            #print(d)
+            paper = Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=bool(d[8]))
+            papers.append(paper)
+            print(f"{str(paper)}, accepted: {paper.accepted}")
+            
 
         # Close the connection
         conn.close()
@@ -142,6 +164,7 @@ def main():
     similarities = []
     for paper in tqdm.tqdm(papers):
         if paper.accepted:
+            print(f"{str(paper)}, accepted: {paper.accepted}")
             other_abstract = paper.abstract
             other_title = paper.title
 
@@ -155,14 +178,32 @@ def main():
             similarities.append((paper, similarity))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
-    with open('similar_papers.txt', 'w') as f:
-        f.write("similarity;venue;year;title;authors;url\n")
-        for paper, similarity in similarities:
-            # write to a file
-            f.write(f"{similarity:.3f};{paper.venue};{paper.year};{paper.url_pdf};{paper.title};{paper.authors}\n")
+    conn = sqlite3.connect(args.database)
+    c = conn.cursor()
 
-            # print to the console
-            #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
+    for paper, similarity in similarities:
+        # Serialize the similarity value to a string
+        similarity_str = json.dumps([(args.sentence_list_name, similarity)])
+        
+        # Update the similarities column for the paper
+        c.execute("""
+            UPDATE papers
+            SET similarities = ?
+            WHERE title = ?
+        """, (similarity_str, paper.title))
+
+        conn.commit()
+    conn.close()
+    # with open(f'{args.sentence_list_name}.txt', 'w') as f:
+    #     f.write("title;venue;accepted;year;similarity;authors;url;bibtex;abstract\n")
+
+    #     for paper, similarity in similarities:
+
+    #         # write to a file
+    #         f.write(f"{paper.title};{paper.venue};{paper.accepted};{paper.year};{similarity:.3f};{paper.authors};{paper.url_pdf};{paper.bibtex};{paper.abstract}\n")
+
+    #         # print to the console
+    #         #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
 
 if __name__ == '__main__':
     main()

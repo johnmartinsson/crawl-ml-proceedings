@@ -3,6 +3,7 @@ import parse_site as ps
 import argparse
 import sqlite3
 from functools import partial
+import json
 
 def main():
     # parse the arguments
@@ -51,7 +52,8 @@ def main():
             url_pdf TEXT,
             abstract TEXT,
             query_term TEXT,
-            accepted BOOLEAN DEFAULT FALSE
+            accepted BOOLEAN DEFAULT FALSE,
+            similarities TEXT
         )
     """)
     # store papers in a database
@@ -61,8 +63,8 @@ def main():
             print(paper)
             c.execute("""
                 INSERT OR REPLACE INTO papers 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (paper.title, paper.authors, paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, query_term, paper.accepted))
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (paper.title, paper.authors, paper.venue, paper.year, paper.bibtex, paper.url_pdf, paper.abstract, query_term, paper.accepted, json.dumps([])))
             conn.commit()
         else:
             print('Invalid paper: ', paper)
