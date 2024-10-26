@@ -89,10 +89,8 @@ def main():
 
         
         for d in data:
-            #print(d)
             paper = Paper(title=d[0], authors=d[1], venue=d[2], year=d[3], bibtex=d[4], url_pdf=d[5], abstract=d[6], accepted=bool(d[8]))
             papers.append(paper)
-            print(f"{str(paper)}, accepted: {paper.accepted}")
             
 
         # Close the connection
@@ -159,7 +157,6 @@ def main():
 
     similarities = []
     for paper in tqdm.tqdm(papers):
-        #print(f"{str(paper)}, accepted: {paper.accepted}")
         other_abstract = paper.abstract
         other_title = paper.title
 
