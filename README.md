@@ -1,6 +1,19 @@
 # Crawl ICLR, ICML, NeurIPS and arXiv
 A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bibtex et cetera and populate a database with these. Then match the abstracts of the papers in the database against one of your own abstracts and rank by similarity.
 
+# Dependencies
+
+    pip install requirements.txt
+
+- beautifulsoup4
+
+If you want to use abstract similarity script also:
+
+- transformes
+- torch
+
+
+
 # How to use
 
     python3 crawl.py --venue=arxiv --query_term='"active learning"' --database=databases/papers.db
