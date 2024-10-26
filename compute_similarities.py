@@ -159,19 +159,18 @@ def main():
 
     similarities = []
     for paper in tqdm.tqdm(papers):
-        if paper.accepted:
-            print(f"{str(paper)}, accepted: {paper.accepted}")
-            other_abstract = paper.abstract
-            other_title = paper.title
+        #print(f"{str(paper)}, accepted: {paper.accepted}")
+        other_abstract = paper.abstract
+        other_title = paper.title
 
-            other_abstract_embedding = encode(other_abstract).squeeze()
-            other_title_embedding = encode(other_title).squeeze()
-            
-            # TODO: not sure how to combine the two embeddings
-            other_embedding = 0.5 * other_abstract_embedding + 0.5 * other_title_embedding
-            similarity = torch.nn.functional.cosine_similarity(sentence_embedding, other_embedding, dim=0).item()
-            
-            similarities.append((paper, similarity))
+        other_abstract_embedding = encode(other_abstract).squeeze()
+        other_title_embedding = encode(other_title).squeeze()
+        
+        # TODO: not sure how to combine the two embeddings
+        other_embedding = 0.5 * other_abstract_embedding + 0.5 * other_title_embedding
+        similarity = torch.nn.functional.cosine_similarity(sentence_embedding, other_embedding, dim=0).item()
+        
+        similarities.append((paper, similarity))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
     conn = sqlite3.connect(args.database)
@@ -190,16 +189,6 @@ def main():
 
         conn.commit()
     conn.close()
-    # with open(f'{args.sentence_list_name}.txt', 'w') as f:
-    #     f.write("title;venue;accepted;year;similarity;authors;url;bibtex;abstract\n")
-
-    #     for paper, similarity in similarities:
-
-    #         # write to a file
-    #         f.write(f"{paper.title};{paper.venue};{paper.accepted};{paper.year};{similarity:.3f};{paper.authors};{paper.url_pdf};{paper.bibtex};{paper.abstract}\n")
-
-    #         # print to the console
-    #         #print(f"{similarity:.3f};{paper.venue};{paper.year};{paper.title}")
 
 if __name__ == '__main__':
     main()
