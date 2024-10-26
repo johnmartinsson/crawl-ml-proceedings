@@ -3,7 +3,7 @@ A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bib
 
 # Dependencies
 
-    pip install requirements.txt
+    pip install -r requirements.txt
 
 - beautifulsoup4
 
