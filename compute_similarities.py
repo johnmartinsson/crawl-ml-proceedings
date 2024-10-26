@@ -25,12 +25,8 @@ def get_sentence_list(name):
         return [
             (1, "From Weak to Strong Sound Event Labels using Adaptive Change-Point Detection and Active Learning"),
         ]
-    elif name == 'weak_labels':
+    elif name == 'noisy_labels':
         return [
-            #(1, "A common way to annotate sound events in audio recordings is to divide the audio fixed and equal length segments to an annotator who gives each segment a presence label for a given class."),
-            #(1, "The length of the segments affect the annotation quality, and shorter segments mean that the annotator needs to assign more presence labels for a given recording."),
-            #(1, "In order to better understand the limits of weak labeling fixed length segments we model this annotation process and derive expressions for the expected label accuracy and the associated number of presence label assignments."),
-            #(1, "We show how the label accuracy of the fixed length weak labeling method depends on the modeled annotator, and that the number of presence label assignments needed for the optimal fixed segment length grows linearly with the length of the audio recording to annotate, while the cost of the oracle method grows linearly with the number of events occurring in the recording."),
             (1, "Detailed analysis on the impact of weak labels on sound event tagging systems by varying the impact of noise introduced by the weak label"),
             (1, "Analysis of the effect of noisy labels on classification models."),
             (1, "Quantify the amount of label noise and understand the effect on classification models."),
