@@ -1,5 +1,7 @@
 # Crawl ICLR, ICML, NeurIPS and arXiv
-A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bibtex et cetera and populate a database with these. Then match the abstracts of the papers in the database against one of your own abstracts and rank by similarity.
+A tool to crawl machine learning proceedings for abstracts, pdfs, key words, bibtex et cetera and populate a database with these. Then match the abstracts of the papers in the database against one of your own abstracts and rank by similarity, and display them in a simple interface that supports opening the papers in the browser, and copying their bibtex entries to the clipboard for proper citing.
+
+![Example Interface](images/interface.png)
 
 # Dependencies
 
