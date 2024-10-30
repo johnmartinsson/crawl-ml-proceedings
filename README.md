@@ -18,7 +18,7 @@ If you want to use abstract similarity script also:
 
 # How to use
 
-    python3 src/crawl.py --venue=arxiv --query_term='"active learning"' --database=databases/papers.db
+    python3 src/crawl.py --venue=arxiv --query_term='"noisy labels"' --database=databases/noisy_labels.db
 
 This will crawl 'arxiv' for papers with "active learning" in the title and insert them into databases/papers.db. The query functionality is limited (see def matches_query in parse_site.py), but just keep to lower case characters and use the same format as above and it should be fine. 
 
